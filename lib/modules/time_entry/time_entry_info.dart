@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:time_is_money/modules/model/time_entry.dart';
@@ -5,7 +7,7 @@ import 'package:time_is_money/modules/utils/time_util.dart';
 
 import 'info_item.dart';
 
-class TimeEntryInfo extends StatelessWidget {
+class TimeEntryInfo extends StatefulWidget {
   const TimeEntryInfo({
     Key key,
     this.entries,
@@ -13,24 +15,49 @@ class TimeEntryInfo extends StatelessWidget {
 
   final List<TimeEntry> entries;
 
+  static const String currentTimeLabel = 'Hora Atual:';
+  static const String workedTimeLabel = 'Tempo trabalhado:';
+
+  @override
+  _TimeEntryInfoState createState() => _TimeEntryInfoState();
+}
+
+class _TimeEntryInfoState extends State<TimeEntryInfo> {
+  final Duration _timeout = const Duration(seconds: 1);
+  String currentTime;
+
+  @override
+  void initState() {
+    currentTime = DateFormat.Hms().format(DateTime.now());
+    _startTimeout();
+    super.initState();
+  }
+
+  void _startTimeout() {
+    Timer(_timeout, _handleTimeout);
+  }
+
+  void _handleTimeout() {
+    _startTimeout();
+    setState(() {
+      currentTime = DateFormat.Hms().format(DateTime.now());
+    });
+  }
+
   String calculateWorkingTime() {
-    final Duration totalDuration = TimeUtil.calculateDuration(entries);
+    final Duration totalDuration = TimeUtil.calculateDuration(widget.entries);
 
     return TimeUtil.durationToHms(totalDuration);
   }
-
-  static const String currentTimeLabel = 'Hora Atual:';
-  static const String workedTimeLabel = 'Tempo trabalhado:';
 
   @override
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
       const SizedBox(height: 10),
-      InfoItem(
-          label: currentTimeLabel,
-          value: DateFormat.Hms().format(DateTime.now())),
+      InfoItem(label: TimeEntryInfo.currentTimeLabel, value: currentTime),
       const SizedBox(height: 10),
-      InfoItem(label: workedTimeLabel, value: calculateWorkingTime()),
+      InfoItem(
+          label: TimeEntryInfo.workedTimeLabel, value: calculateWorkingTime()),
       const SizedBox(height: 10),
       const SizedBox(
         height: 2,
