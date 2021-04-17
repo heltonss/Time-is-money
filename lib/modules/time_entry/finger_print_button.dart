@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class FingerPrintButton extends StatelessWidget {
+  const FingerPrintButton({
+    Key key,
+    this.onPressed,
+    this.backgroundColor,
+  }) : super(key: key);
+
   final VoidCallback onPressed;
   final Color backgroundColor;
-
-  // ignore: sort_constructors_first
-  const FingerPrintButton({
-    @required this.onPressed,
-    @required this.backgroundColor,
-  });
 
   @override
   Widget build(BuildContext context) {
