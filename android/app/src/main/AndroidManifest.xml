@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.time_is_money">
+
+  <uses-permission android:name="android.permission.VIBRATE" />
+
    <application
         android:label="time_is_money"
         android:icon="@mipmap/ic_launcher">

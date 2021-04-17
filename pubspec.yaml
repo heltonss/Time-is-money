@@ -23,6 +23,8 @@ environment:
 dependencies:
   conventional_commit: ^0.3.0+1
   cupertino_icons: ^1.0.2
+  intl: ^0.17.0
+  vibration: ^1.7.3
   flutter:
     sdk: flutter
 
