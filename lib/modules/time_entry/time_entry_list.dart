@@ -37,7 +37,7 @@ List<Widget> buildListItems(List<TimeEntry> entries) {
 
     listItems.add(ListTile(
       leading: icon,
-      title: Text(DateFormat.Hm().format(entry.timeEntry)),
+      title: Text(DateFormat.Hms().format(entry.timeEntry)),
     ));
     isPeriodEntrance = !isPeriodEntrance;
   }
