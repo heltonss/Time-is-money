@@ -19,7 +19,7 @@ class TimeEntryList extends StatelessWidget {
 }
 
 List<Widget> buildListItems(List<TimeEntry> entries) {
-  final List<Widget> listItems = [];
+  final List<Widget> listItems = <Widget>[];
   bool isPeriodEntrance = true;
   for (final TimeEntry entry in entries) {
     Icon icon;
