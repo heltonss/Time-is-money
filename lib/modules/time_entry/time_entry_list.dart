@@ -22,9 +22,21 @@ List<Widget> buildListItems(List<TimeEntry> entries) {
   final List<Widget> listItems = [];
   bool isPeriodEntrance = true;
   for (final TimeEntry entry in entries) {
+    Icon icon;
+    if (isPeriodEntrance) {
+      icon = const Icon(
+        Icons.arrow_downward,
+        color: Colors.green,
+      );
+    } else {
+      icon = const Icon(
+        Icons.arrow_upward,
+        color: Colors.red,
+      );
+    }
+
     listItems.add(ListTile(
-      leading:
-          Icon(isPeriodEntrance ? Icons.arrow_downward : Icons.arrow_upward),
+      leading: icon,
       title: Text(DateFormat.Hm().format(entry.timeEntry)),
     ));
     isPeriodEntrance = !isPeriodEntrance;
