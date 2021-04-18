@@ -4,7 +4,6 @@ class TimeUtil {
   static const int secondsPerMinute = 60;
   static const int minutesPerHour = 60;
 
-
   static Duration calculateDuration(List<TimeEntry> entries) {
     DateTime periodEntrance;
 
@@ -23,12 +22,12 @@ class TimeUtil {
     return Duration(seconds: totalWorkingTimeInSeconds);
   }
 
-  static String durationToHms(Duration duration) {
-    String twoDigits(int n) {
-      if (n >= 10) return '$n';
-      return '0$n';
-    }
+  static String twoDigits(int n) {
+    if (n >= 10) return '$n';
+    return '0$n';
+  }
 
+  static String durationToHms(Duration duration) {
     if (duration.inMicroseconds < 0) {
       return '-${-duration}';
     }
@@ -37,5 +36,13 @@ class TimeUtil {
     final String twoDigitSeconds =
         twoDigits(duration.inSeconds.remainder(secondsPerMinute) as int);
     return '${duration.inHours}:$twoDigitMinutes:$twoDigitSeconds';
+  }
+
+  static String parseMonthKeyFromDate(DateTime date) {
+    return '${date.year}-${twoDigits(date.month)}';
+  }
+
+  static String parseDayKeyFromDate(DateTime date) {
+    return '${date.year}-${twoDigits(date.month)}-${twoDigits(date.day)}';
   }
 }
