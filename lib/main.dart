@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:time_is_money/modules/create_user/create_user.dart';
 import 'package:time_is_money/modules/login/login.dart';
+import 'package:time_is_money/modules/time_entry/time_entry_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,6 +17,10 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         initialRoute: '/',
-        routes: {'/': (BuildContext context) => Login()});
+        routes: {
+          '/': (BuildContext context) => Login(),
+          'time-entry': (BuildContext context) => TimeEntryPage(),
+          'create-user':(BuildContext context) => CreateUser()
+          });
   }
 }

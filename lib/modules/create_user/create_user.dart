@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:time_is_money/modules/time_entry/time_entry_page.dart';
 
-class Login extends StatelessWidget {
+class CreateUser extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
@@ -18,7 +17,7 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('login'),
+          title: const Text('Cadastrar usuario'),
         ),
         body: Padding(
             padding: const EdgeInsets.all(16),
@@ -35,35 +34,21 @@ class Login extends StatelessWidget {
       Container(
         alignment: Alignment.topCenter,
         margin: EdgeInsets.only(top: 50),
-        child: const Icon(Icons.access_time, size: 150, color: Colors.blueAccent,),
+        child: const Icon(Icons.person_add, size: 150, color: Colors.blueAccent,),
       ),
       Column(
-        children: inputs
+          children: inputs
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 30.0),
         child: ConstrainedBox(
           constraints: const BoxConstraints.tightFor(width: 150, height: 50),
           child:  ElevatedButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => TimeEntryPage() ));
-            },
-            child: const Text('acessar', style: TextStyle(fontSize: 16),)),
-      ),
-    ),
-      Container(
-        alignment: Alignment.center,
-        margin: const EdgeInsets.only(top: 30),
-        child:  TextButton(
-          onPressed: () {
-            acessar();
-            Navigator.pushNamed(context, 'create-user');
-          },
-          child: Text('criar usuario'.toUpperCase(),
-          style: const TextStyle(fontSize: 16),
-          ),
+              onPressed: () {
+              },
+              child: const Text('cadastrar', style: TextStyle(fontSize: 16),)),
         ),
-      )
+      ),
     ];
   }
 
@@ -73,10 +58,10 @@ class Login extends StatelessWidget {
       TextFormField(
         decoration: const InputDecoration(
           icon: Icon(Icons.email_outlined),
-          hintText: 'Insira seu e-mail de login',
+          hintText: 'Insira seu e-mail',
           labelText: 'e-mail',
         ),
-       ),
+      ),
     ),
     _containerInput(
       TextFormField(
@@ -91,10 +76,4 @@ class Login extends StatelessWidget {
     )
   ];
 
-
-
-
-  void acessar() {
-    print('acessando');
-  }
 }
