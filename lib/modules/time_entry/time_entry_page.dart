@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:time_is_money/modules/common/error_page.dart';
-import 'package:time_is_money/modules/common/loading_page.dart';
 import 'package:time_is_money/modules/model/time_entry.dart';
 import 'package:time_is_money/modules/model/user.dart';
 import 'package:time_is_money/modules/time_entry/time_entry_body.dart';
@@ -41,52 +40,53 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
           if (snapshot.connectionState == ConnectionState.done) {
             Map<String, dynamic> data = snapshot.data.data();
             _entriesInSeconds.clear();
-            _entriesInSeconds.addAll(List.from(data['entries'] as List));
-            _entries.clear();
-            for (final int entry in _entriesInSeconds) {
-              _entries
-                  .add(TimeEntry(DateTime.fromMicrosecondsSinceEpoch(entry)));
+            final List entries = data['entries'] as List;
+            if (entries != null) {
+              _entriesInSeconds.addAll(List.from(entries));
+              _entries.clear();
+              for (final int entry in _entriesInSeconds) {
+                _entries
+                    .add(TimeEntry(DateTime.fromMicrosecondsSinceEpoch(entry)));
+              }
             }
-
-            return MaterialApp(
-              title: 'Time is Money',
-              home: Scaffold(
-                appBar: AppBar(
-                  title: const Text('Time is Money'),
-                ),
-                body: TimeEntryBody(entries: _entries),
-                floatingActionButton: FingerPrintButton(
-                  backgroundColor:
-                      _entries.length % 2 == 0 ? Colors.green : Colors.red,
-                  onPressed: () async {
-                    await _vibrate();
-                    final DateTime now = DateTime.now();
-                    _entriesInSeconds.add(now.microsecondsSinceEpoch);
-                    try {
-                      await firestore
-                          .collection('daily_entry')
-                          .doc('XgdiYU9myVqluCSJRDvP')
-                          .update({
-                        'day': TimeUtil.parseDayKeyFromDate(now),
-                        'user_id': user.userId,
-                        'entries': _entriesInSeconds
-                      });
-                    } catch (e) {
-                      DialogUtil.showErrorMessage(context,
-                          'Erro ao registrar apontamento: ${e.toString()}');
-                      return;
-                    }
-                    setState(() {
-                      _entries.add(TimeEntry(now));
-                    });
-                  },
-                ),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.centerFloat,
-              ),
-            );
           }
-          return LoadingPage();
+          return MaterialApp(
+            title: 'Time is Money',
+            home: Scaffold(
+              appBar: AppBar(
+                title: const Text('Time is Money'),
+              ),
+              body: TimeEntryBody(entries: _entries),
+              floatingActionButton: FingerPrintButton(
+                backgroundColor:
+                    _entries.length % 2 == 0 ? Colors.green : Colors.red,
+                onPressed: () async {
+                  await _vibrate();
+                  final DateTime now = DateTime.now();
+                  _entriesInSeconds.add(now.microsecondsSinceEpoch);
+                  try {
+                    await firestore
+                        .collection('daily_entry')
+                        .doc('XgdiYU9myVqluCSJRDvP')
+                        .update({
+                      'day': TimeUtil.parseDayKeyFromDate(now),
+                      'user_id': user.userId,
+                      'entries': _entriesInSeconds
+                    });
+                  } catch (e) {
+                    DialogUtil.showErrorMessage(context,
+                        'Erro ao registrar apontamento: ${e.toString()}');
+                    return;
+                  }
+                  setState(() {
+                    _entries.add(TimeEntry(now));
+                  });
+                },
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.centerFloat,
+            ),
+          );
         });
   }
 
