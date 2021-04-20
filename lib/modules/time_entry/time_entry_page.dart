@@ -21,7 +21,7 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final User user =
-      User('PQeK98vj6XFJjGP88CPR', 'Helton', 'helton.isac@gmail.com');
+      User(userName: 'Helton', email: 'helton.isac@gmail.com',userId: 'PQeK98vj6XFJjGP88CPR');
   final dailyEntryId = 'XgdiYU9myVqluCSJRDvP';
 
   @override

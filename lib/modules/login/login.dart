@@ -1,11 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:time_is_money/modules/model/user.dart' as user_main;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:time_is_money/modules/time_entry/time_entry_page.dart';
 
 class Login extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _password = TextEditingController();
 
   static Widget _containerInput(Widget input) {
     return Container(
@@ -38,25 +39,13 @@ class Login extends StatelessWidget {
         child: const Icon(Icons.access_time, size: 150, color: Colors.blueAccent,),
       ),
       Column(
-        children: inputs
+        children: inputs(context)
       ),
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 30.0),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints.tightFor(width: 150, height: 50),
-          child:  ElevatedButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => TimeEntryPage() ));
-            },
-            child: const Text('acessar', style: TextStyle(fontSize: 16),)),
-      ),
-    ),
       Container(
         alignment: Alignment.center,
         margin: const EdgeInsets.only(top: 30),
         child:  TextButton(
           onPressed: () {
-            acessar();
             Navigator.pushNamed(context, 'create-user');
           },
           child: Text('criar usuario'.toUpperCase(),
@@ -68,7 +57,11 @@ class Login extends StatelessWidget {
   }
 
 
-  List <Widget> inputs = [
+  List <Widget> inputs (BuildContext context) {
+    final TextEditingController _email = TextEditingController();
+    final TextEditingController _password = TextEditingController();
+
+    return [
     _containerInput(
       TextFormField(
         decoration: const InputDecoration(
@@ -76,6 +69,14 @@ class Login extends StatelessWidget {
           hintText: 'Insira seu e-mail de login',
           labelText: 'e-mail',
         ),
+        controller: _email,
+        validator: (value){
+          if(value.isEmpty){
+            return 'Insira um e-mail';
+          }
+
+          return null;
+        },
        ),
     ),
     _containerInput(
@@ -87,14 +88,46 @@ class Login extends StatelessWidget {
           hintText: 'Insira sua senha',
           labelText: 'password',
         ),
+        controller: _password,
+        validator: (value){
+          if(value.isEmpty){
+            return 'Insira um password';
+          }
+
+          return null;
+        },
       ),
-    )
-  ];
+    ),
+      Padding(
+          padding: const EdgeInsets.symmetric(vertical: 30.0),
+          child: ConstrainedBox(
+          constraints: const BoxConstraints.tightFor(width: 150, height: 50),
+        child:  ElevatedButton(
+            onPressed: () {
+              user_main.User user = user_main.User(email: _email.text, password: _password.text);
+              signin(user, context);
+            },
+            child: const Text('acessar', style: TextStyle(fontSize: 16),)),
+      ),
+      )
+  ];}
 
 
-
-
-  void acessar() {
-    print('acessando');
+  signin(user_main.User user, BuildContext context) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: user.email,
+          password: user.password
+      );
+      if(userCredential.user.email !=  null) {
+       Navigator.pushNamed(context, 'time-entry');
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    }
   }
 }
