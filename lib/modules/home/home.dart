@@ -18,7 +18,7 @@ class Home extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 16.0, bottom: 20.0),
                 child: Center(
                     child: Text(
-                  'Bem vindo: ${user.email}',
+                  'Bem vindo: ${user.userName.toUpperCase()}',
                   style: const TextStyle(fontSize: 25),
                 )),
               ),
