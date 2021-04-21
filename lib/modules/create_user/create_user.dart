@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +7,10 @@ import 'package:time_is_money/modules/model/user.dart' as user_main;
 
 class CreateUser extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBarMessage(String message, bool error, BuildContext context) {
+    SnackBar snackBar =  SnackBar(content: Text(message), backgroundColor: error ? Colors.redAccent : Colors.blueAccent );
+    return ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   static Widget _containerInput(Widget input) {
     return Container(
@@ -104,16 +109,18 @@ class CreateUser extends StatelessWidget {
   Future<Object> createUser(user_main.User user, BuildContext context) async {
     try {
      final UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: user.email,
+          email: user.email.trim(),
           password: user.password
       );
      if(userCredential.additionalUserInfo.isNewUser){
-       Navigator.pushNamed(context, '/');
+       snackBarMessage('Usuário cadastrado com sucesso!', false, context);
+       Timer(const Duration(seconds: 2), () => Navigator.pushNamed(context, '/'));
      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('A senha fornecida é muito fraca.');
       } else if (e.code == 'email-already-in-use') {
+        snackBarMessage('Usuário já existe!', true, context);
         print('Já existe uma conta com esse email.');
       }
     } catch (e) {
