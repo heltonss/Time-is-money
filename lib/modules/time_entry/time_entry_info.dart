@@ -14,7 +14,7 @@ class TimeEntryInfo extends StatefulWidget {
     this.isLoading,
   }) : super(key: key);
 
-  final List<TimeEntry> entries;
+  final List<DateTime> entries;
   final bool isLoading;
 
   static const String dateLabel = 'Data:';

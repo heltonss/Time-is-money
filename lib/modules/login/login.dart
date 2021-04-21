@@ -139,7 +139,10 @@ class Login extends StatelessWidget {
     final Map<String, dynamic> firebaseUser = snapshot.data();
     user_main.User firestoreUser;
     if (firebaseUser == null) {
-      user.userName = user.email.substring(0, user.email.indexOf('@'));
+      user.userName = user.email
+          .substring(0, user.email.indexOf('@'))
+          .replaceAll('.', ' ')
+          .replaceAll('_', ' ');
       await userCollection.doc(user.email).set(user.toJson());
       firestoreUser = user;
     } else {

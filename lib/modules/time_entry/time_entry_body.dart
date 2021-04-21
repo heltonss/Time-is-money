@@ -10,7 +10,7 @@ class TimeEntryBody extends StatelessWidget {
     this.isLoading,
   }) : super(key: key);
 
-  final List<TimeEntry> entries;
+  final List<DateTime> entries;
   final bool isLoading;
 
   @override
