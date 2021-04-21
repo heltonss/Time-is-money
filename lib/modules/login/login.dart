@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:time_is_money/modules/model/user.dart' as user_main;
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:time_is_money/modules/time_entry/time_entry_page.dart';
 
 class Login extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -91,9 +90,8 @@ class Login extends StatelessWidget {
         controller: _password,
         validator: (value){
           if(value.isEmpty){
-            return 'Insira um password';
+            return 'Insira uma senha';
           }
-
           return null;
         },
       ),
@@ -115,7 +113,7 @@ class Login extends StatelessWidget {
 
   signin(user_main.User user, BuildContext context) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: user.email,
           password: user.password
       );
@@ -124,9 +122,9 @@ class Login extends StatelessWidget {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        print('Usuário não encontrado.');
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        print('Senha incorreta');
       }
     }
   }
