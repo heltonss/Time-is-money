@@ -1,8 +1,8 @@
-import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:time_is_money/modules/model/user.dart' as user_main;
-import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -118,7 +118,8 @@ class Login extends StatelessWidget {
           password: user.password
       );
       if(userCredential.user.email !=  null) {
-       Navigator.pushReplacementNamed(context, 'home');
+        Navigator.pushReplacementNamed(context, 'home',
+            arguments: user);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
