@@ -20,9 +20,11 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
   final List<int> _entriesInSeconds = <int>[];
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final User user =
-      User(userName: 'Helton', email: 'helton.isac@gmail.com',userId: 'PQeK98vj6XFJjGP88CPR');
-  final dailyEntryId = 'XgdiYU9myVqluCSJRDvP';
+  final User user = User(
+      userName: 'Helton',
+      email: 'helton.isac@gmail.com',
+      userId: 'PQeK98vj6XFJjGP88CPR');
+  final String dailyEntryId = 'XgdiYU9myVqluCSJRDvP';
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
           }
 
           if (snapshot.connectionState == ConnectionState.done) {
-            Map<String, dynamic> data = snapshot.data.data();
+            final Map<String, dynamic> data = snapshot.data.data();
             _entriesInSeconds.clear();
             final List entries = data['entries'] as List;
             if (entries != null) {
@@ -50,42 +52,39 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
               }
             }
           }
-          return MaterialApp(
-            title: 'Time is Money',
-            home: Scaffold(
-              appBar: AppBar(
-                title: const Text('Time is Money'),
-              ),
-              body: TimeEntryBody(entries: _entries),
-              floatingActionButton: FingerPrintButton(
-                backgroundColor:
-                    _entries.length % 2 == 0 ? Colors.green : Colors.red,
-                onPressed: () async {
-                  await _vibrate();
-                  final DateTime now = DateTime.now();
-                  _entriesInSeconds.add(now.microsecondsSinceEpoch);
-                  try {
-                    await firestore
-                        .collection('daily_entry')
-                        .doc('XgdiYU9myVqluCSJRDvP')
-                        .update({
-                      'day': TimeUtil.parseDayKeyFromDate(now),
-                      'user_id': user.userId,
-                      'entries': _entriesInSeconds
-                    });
-                  } catch (e) {
-                    DialogUtil.showErrorMessage(context,
-                        'Erro ao registrar apontamento: ${e.toString()}');
-                    return;
-                  }
-                  setState(() {
-                    _entries.add(TimeEntry(now));
-                  });
-                },
-              ),
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerFloat,
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Time is Money'),
             ),
+            body: TimeEntryBody(entries: _entries),
+            floatingActionButton: FingerPrintButton(
+              backgroundColor:
+                  _entries.length % 2 == 0 ? Colors.green : Colors.red,
+              onPressed: () async {
+                await _vibrate();
+                final DateTime now = DateTime.now();
+                _entriesInSeconds.add(now.microsecondsSinceEpoch);
+                try {
+                  await firestore
+                      .collection('daily_entry')
+                      .doc('XgdiYU9myVqluCSJRDvP')
+                      .update({
+                    'day': TimeUtil.parseDayKeyFromDate(now),
+                    'user_id': user.userId,
+                    'entries': _entriesInSeconds
+                  });
+                } catch (e) {
+                  DialogUtil.showErrorMessage(context,
+                      'Erro ao registrar apontamento: ${e.toString()}');
+                  return;
+                }
+                setState(() {
+                  _entries.add(TimeEntry(now));
+                });
+              },
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
           );
         });
   }

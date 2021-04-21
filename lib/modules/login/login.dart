@@ -118,7 +118,7 @@ class Login extends StatelessWidget {
           password: user.password
       );
       if(userCredential.user.email !=  null) {
-       Navigator.pushNamed(context, 'time-entry');
+       Navigator.pushReplacementNamed(context, 'home');
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
