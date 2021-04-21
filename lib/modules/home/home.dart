@@ -25,7 +25,7 @@ class Home extends StatelessWidget {
               Center(
                 child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, 'time-entry');
+                      Navigator.pushNamed(context, 'time-entry', arguments: user);
                     },
                     child: const Text(
                       'Apontar Horas',

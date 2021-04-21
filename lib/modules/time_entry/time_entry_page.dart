@@ -20,6 +20,7 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
   final List<int> _entriesInSeconds = <int>[];
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   final User user = User(
       userName: 'Helton',
       email: 'helton.isac@gmail.com',
@@ -28,6 +29,7 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final User user = ModalRoute.of(context).settings.arguments as User;
     CollectionReference dailyEntry =
         FirebaseFirestore.instance.collection('daily_entry');
 
