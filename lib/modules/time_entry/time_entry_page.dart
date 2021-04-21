@@ -30,7 +30,11 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
   @override
   Widget build(BuildContext context) {
     final User user = ModalRoute.of(context).settings.arguments as User;
-    CollectionReference dailyEntry =
+
+    final CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('user');
+
+    final CollectionReference dailyEntry =
         FirebaseFirestore.instance.collection('daily_entry');
 
     return FutureBuilder<DocumentSnapshot>(
@@ -53,42 +57,45 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
                     .add(TimeEntry(DateTime.fromMicrosecondsSinceEpoch(entry)));
               }
             }
+            return buildScaffold(context, user, false);
           }
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Time is Money'),
-            ),
-            body: TimeEntryBody(entries: _entries),
-            floatingActionButton: FingerPrintButton(
-              backgroundColor:
-                  _entries.length % 2 == 0 ? Colors.green : Colors.red,
-              onPressed: () async {
-                await _vibrate();
-                final DateTime now = DateTime.now();
-                _entriesInSeconds.add(now.microsecondsSinceEpoch);
-                try {
-                  await firestore
-                      .collection('daily_entry')
-                      .doc('XgdiYU9myVqluCSJRDvP')
-                      .update({
-                    'day': TimeUtil.parseDayKeyFromDate(now),
-                    'user_id': user.userId,
-                    'entries': _entriesInSeconds
-                  });
-                } catch (e) {
-                  DialogUtil.showErrorMessage(context,
-                      'Erro ao registrar apontamento: ${e.toString()}');
-                  return;
-                }
-                setState(() {
-                  _entries.add(TimeEntry(now));
-                });
-              },
-            ),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-          );
+          return buildScaffold(context, user, true);
         });
+  }
+
+  Widget buildScaffold(BuildContext context, User user, bool isLoading) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Time is Money'),
+      ),
+      body: TimeEntryBody(entries: _entries, isLoading: isLoading),
+      floatingActionButton: FingerPrintButton(
+        backgroundColor: _entries.length % 2 == 0 ? Colors.green : Colors.red,
+        onPressed: () async {
+          await _vibrate();
+          final DateTime now = DateTime.now();
+          _entriesInSeconds.add(now.microsecondsSinceEpoch);
+          try {
+            await firestore
+                .collection('daily_entry')
+                .doc('XgdiYU9myVqluCSJRDvP')
+                .update({
+              'day': TimeUtil.parseDayKeyFromDate(now),
+              'user_id': user.userId,
+              'entries': _entriesInSeconds
+            });
+          } catch (e) {
+            DialogUtil.showErrorMessage(
+                context, 'Erro ao registrar apontamento: ${e.toString()}');
+            return;
+          }
+          setState(() {
+            _entries.add(TimeEntry(now));
+          });
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
   }
 
   Future<void> _vibrate() async {

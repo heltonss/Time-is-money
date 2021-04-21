@@ -11,13 +11,16 @@ class TimeEntryInfo extends StatefulWidget {
   const TimeEntryInfo({
     Key key,
     this.entries,
+    this.isLoading,
   }) : super(key: key);
 
   final List<TimeEntry> entries;
+  final bool isLoading;
 
   static const String dateLabel = 'Data:';
   static const String currentTimeLabel = 'Hora Atual:';
   static const String workedTimeLabel = 'Tempo trabalhado:';
+  static const String loadingLabel = 'Carregando...';
 
   @override
   _TimeEntryInfoState createState() => _TimeEntryInfoState();
@@ -46,6 +49,8 @@ class _TimeEntryInfoState extends State<TimeEntryInfo> {
   }
 
   String calculateWorkingTime() {
+    if (widget.isLoading) return TimeEntryInfo.loadingLabel;
+
     final Duration totalDuration = TimeUtil.calculateDuration(widget.entries);
 
     return TimeUtil.durationToHms(totalDuration);
@@ -56,16 +61,20 @@ class _TimeEntryInfoState extends State<TimeEntryInfo> {
     return Column(children: <Widget>[
       Padding(
         padding: const EdgeInsets.all(8.0),
-        child: InfoItem(label: TimeEntryInfo.dateLabel, value: TimeUtil.formatDate(DateTime.now())),
+        child: InfoItem(
+            label: TimeEntryInfo.dateLabel,
+            value: TimeUtil.formatDate(DateTime.now())),
       ),
       Padding(
         padding: const EdgeInsets.all(8.0),
-        child: InfoItem(label: TimeEntryInfo.currentTimeLabel, value: currentTime),
+        child:
+            InfoItem(label: TimeEntryInfo.currentTimeLabel, value: currentTime),
       ),
       Padding(
         padding: const EdgeInsets.all(8.0),
         child: InfoItem(
-            label: TimeEntryInfo.workedTimeLabel, value: calculateWorkingTime()),
+            label: TimeEntryInfo.workedTimeLabel,
+            value: calculateWorkingTime()),
       ),
       const SizedBox(
         height: 2,
@@ -74,7 +83,6 @@ class _TimeEntryInfoState extends State<TimeEntryInfo> {
           decoration: BoxDecoration(color: Colors.blue),
         ),
       ),
-
     ]);
   }
 }
