@@ -15,6 +15,7 @@ class TimeEntryInfo extends StatefulWidget {
 
   final List<TimeEntry> entries;
 
+  static const String dateLabel = 'Data:';
   static const String currentTimeLabel = 'Hora Atual:';
   static const String workedTimeLabel = 'Tempo trabalhado:';
 
@@ -53,12 +54,19 @@ class _TimeEntryInfoState extends State<TimeEntryInfo> {
   @override
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
-      const SizedBox(height: 10),
-      InfoItem(label: TimeEntryInfo.currentTimeLabel, value: currentTime),
-      const SizedBox(height: 10),
-      InfoItem(
-          label: TimeEntryInfo.workedTimeLabel, value: calculateWorkingTime()),
-      const SizedBox(height: 10),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: InfoItem(label: TimeEntryInfo.dateLabel, value: TimeUtil.formatDate(DateTime.now())),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: InfoItem(label: TimeEntryInfo.currentTimeLabel, value: currentTime),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: InfoItem(
+            label: TimeEntryInfo.workedTimeLabel, value: calculateWorkingTime()),
+      ),
       const SizedBox(
         height: 2,
         width: double.infinity,
@@ -66,7 +74,7 @@ class _TimeEntryInfoState extends State<TimeEntryInfo> {
           decoration: BoxDecoration(color: Colors.blue),
         ),
       ),
-      const SizedBox(height: 10),
+
     ]);
   }
 }

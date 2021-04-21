@@ -45,4 +45,8 @@ class TimeUtil {
   static String parseDayKeyFromDate(DateTime date) {
     return '${date.year}-${twoDigits(date.month)}-${twoDigits(date.day)}';
   }
+
+  static String formatDate(DateTime date) {
+    return '${twoDigits(date.day)}/${twoDigits(date.month)}/${date.year}';
+  }
 }
