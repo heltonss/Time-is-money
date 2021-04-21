@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:time_is_money/modules/model/time_entry.dart';
 
 class TimeEntryList extends StatelessWidget {
   const TimeEntryList({
@@ -8,7 +7,7 @@ class TimeEntryList extends StatelessWidget {
     this.entries,
   }) : super(key: key);
 
-  final List<TimeEntry> entries;
+  final List<DateTime> entries;
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +17,10 @@ class TimeEntryList extends StatelessWidget {
   }
 }
 
-List<Widget> buildListItems(List<TimeEntry> entries) {
+List<Widget> buildListItems(List<DateTime> entries) {
   final List<Widget> listItems = <Widget>[];
   bool isPeriodEntrance = true;
-  for (final TimeEntry entry in entries) {
+  for (final DateTime entry in entries) {
     Icon icon;
     if (isPeriodEntrance) {
       icon = const Icon(
@@ -37,7 +36,7 @@ List<Widget> buildListItems(List<TimeEntry> entries) {
 
     listItems.add(ListTile(
       leading: icon,
-      title: Text(DateFormat.Hms().format(entry.timeEntry)),
+      title: Text(DateFormat.Hms().format(entry)),
     ));
     isPeriodEntrance = !isPeriodEntrance;
   }

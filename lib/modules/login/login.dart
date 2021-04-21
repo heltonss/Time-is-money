@@ -1,4 +1,5 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -6,6 +7,9 @@ import 'package:time_is_money/modules/model/user.dart' as user_main;
 
 class Login extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final CollectionReference userCollection =
+      FirebaseFirestore.instance.collection('user');
 
   static Widget _containerInput(Widget input) {
     return Container(
@@ -102,7 +106,7 @@ class Login extends StatelessWidget {
           constraints: const BoxConstraints.tightFor(width: 150, height: 50),
         child:  ElevatedButton(
             onPressed: () {
-              user_main.User user = user_main.User(email: _email.text, password: _password.text);
+              final user_main.User user = user_main.User(email: _email.text, password: _password.text);
               signin(user, context);
             },
             child: const Text('acessar', style: TextStyle(fontSize: 16),)),
@@ -118,8 +122,8 @@ class Login extends StatelessWidget {
           password: user.password
       );
       if(userCredential.user.email !=  null) {
-        Navigator.pushReplacementNamed(context, 'home',
-            arguments: user);
+        user_main.User firestoreUser = await getOrCreateUserInFirestore(user);
+        Navigator.pushReplacementNamed(context, 'home', arguments: firestoreUser);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -128,5 +132,22 @@ class Login extends StatelessWidget {
         print('Senha incorreta');
       }
     }
+  }
+
+  Future<user_main.User> getOrCreateUserInFirestore(user_main.User user) async {
+    final DocumentSnapshot snapshot = await userCollection.doc(user.email).get();
+    final Map<String, dynamic> firebaseUser = snapshot.data();
+    user_main.User firestoreUser;
+    if (firebaseUser == null) {
+      user.userName = user.email
+          .substring(0, user.email.indexOf('@'))
+          .replaceAll('.', ' ')
+          .replaceAll('_', ' ');
+      await userCollection.doc(user.email).set(user.toJson());
+      firestoreUser = user;
+    } else {
+      firestoreUser = user_main.User.fromJson(firebaseUser);
+    }
+    return firestoreUser;
   }
 }

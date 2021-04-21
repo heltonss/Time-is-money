@@ -7,17 +7,29 @@ class TimeEntryBody extends StatelessWidget {
   const TimeEntryBody({
     Key key,
     this.entries,
+    this.isLoading,
   }) : super(key: key);
 
-  final List<TimeEntry> entries;
+  final List<DateTime> entries;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        TimeEntryInfo(entries: entries),
-        Expanded(child: TimeEntryList(entries: entries)),
+        TimeEntryInfo(entries: entries, isLoading: isLoading),
+        buildList(),
       ],
     );
+  }
+
+  Widget buildList() {
+    if (isLoading) {
+      return const Padding(
+        padding: EdgeInsets.all(20.0),
+        child: CircularProgressIndicator(),
+      );
+    }
+    return Expanded(child: TimeEntryList(entries: entries));
   }
 }
