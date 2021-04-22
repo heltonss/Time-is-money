@@ -30,20 +30,21 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
   final CollectionReference entriesPerDayCollRef =
       FirebaseFirestore.instance.collection('entries_per_day');
 
+  User loggedUser;
   String dailyEntryId;
 
   @override
   Widget build(BuildContext context) {
-    final User user = ModalRoute.of(context).settings.arguments as User;
+    loggedUser = ModalRoute.of(context).settings.arguments as User;
 
-    return buildFutureBuilder(user: user);
+    return buildPage();
   }
 
-  FutureBuilder<DocumentSnapshot> buildFutureBuilder({User user}) {
+  FutureBuilder<DocumentSnapshot> buildPage() {
     Future<DocumentSnapshot> _getEntriesForUser() async {
       if (dailyEntryId == null) {
         final DateTime now = DateTime.now();
-        final String yearKey = TimeUtil.generateYearKey(user, now);
+        final String yearKey = TimeUtil.generateYearKey(loggedUser, now);
         final DocumentSnapshot snapshot =
             await entriesPerYearCollRef.doc(yearKey).get();
         final Map<String, dynamic> data = snapshot.data();
@@ -129,9 +130,9 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
               }
             }
             return buildScaffold(
-                context: context, user: user, isLoading: false);
+                context: context, user: loggedUser, isLoading: false);
           }
-          return buildScaffold(context: context, user: user, isLoading: true);
+          return buildScaffold(context: context, user: loggedUser, isLoading: true);
         });
   }
 
