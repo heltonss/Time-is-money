@@ -1,6 +1,3 @@
-import 'package:time_is_money/modules/model/time_entry.dart';
-import 'package:time_is_money/modules/model/user.dart';
-
 class TimeUtil {
   static const int secondsPerMinute = 60;
   static const int minutesPerHour = 60;
@@ -14,8 +11,7 @@ class TimeUtil {
       if (periodEntrance == null) {
         periodEntrance = entry;
       } else {
-        totalWorkingTimeInSeconds +=
-            entry.difference(periodEntrance).inSeconds;
+        totalWorkingTimeInSeconds += entry.difference(periodEntrance).inSeconds;
         periodEntrance = null;
       }
     }
@@ -37,10 +33,6 @@ class TimeUtil {
     final String twoDigitSeconds =
         twoDigits(duration.inSeconds.remainder(secondsPerMinute) as int);
     return '${duration.inHours}:$twoDigitMinutes:$twoDigitSeconds';
-  }
-
-  static String generateYearKey(User user, DateTime date) {
-    return '${user.email}_${date.year}';
   }
 
   static String parseMonthKeyFromDate(DateTime date) {
