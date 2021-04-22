@@ -7,7 +7,6 @@ import 'package:time_is_money/modules/model/entries_per_year.dart';
 import 'package:time_is_money/modules/model/user.dart';
 import 'package:time_is_money/modules/time_entry/time_entry_body.dart';
 import 'package:time_is_money/modules/utils/dialog_util.dart';
-import 'package:time_is_money/modules/utils/time_util.dart';
 import 'package:vibration/vibration.dart';
 
 import 'finger_print_button.dart';
@@ -22,18 +21,24 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
   final List<int> _entriesInSeconds = <int>[];
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  CollectionReference entriesPerYearCollRef;
-  CollectionReference entriesPerMonthCollRef;
-  CollectionReference entriesPerDayCollRef;
+  CollectionReference yearCollRef;
+  CollectionReference monthCollRef;
+  CollectionReference dayCollRef;
+
   User loggedUser;
   String dailyEntryId;
+  DateTime currentDate;
+  String yearKey;
 
   @override
   Widget build(BuildContext context) {
     loggedUser = ModalRoute.of(context).settings.arguments as User;
-    entriesPerYearCollRef = firestore.collection('entries_per_year');
-    entriesPerMonthCollRef = firestore.collection('entries_per_month');
-    entriesPerDayCollRef = firestore.collection('entries_per_day');
+    yearCollRef = firestore.collection('entries_per_year');
+    monthCollRef = firestore.collection('entries_per_month');
+    dayCollRef = firestore.collection('entries_per_day');
+
+    currentDate = DateTime.now();
+    yearKey = '${loggedUser.email}_${currentDate.year}';
 
     return buildPage();
   }
@@ -41,40 +46,37 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
   FutureBuilder<DocumentSnapshot> buildPage() {
     Future<DocumentSnapshot> _getEntriesForUser() async {
       if (dailyEntryId == null) {
-        final DateTime now = DateTime.now();
-        final String yearKey = TimeUtil.generateYearKey(loggedUser, now);
-        final DocumentSnapshot snapshot =
-            await entriesPerYearCollRef.doc(yearKey).get();
+        final DocumentSnapshot snapshot = await yearCollRef.doc(yearKey).get();
         final Map<String, dynamic> entriesPerYearJson = snapshot.data();
         DocumentReference entriesPerDayRef;
         if (entriesPerYearJson != null) {
           final EntriesPerYear entriesPerYear =
               EntriesPerYear.fromJson(entriesPerYearJson);
           final String monthId = entriesPerYear
-              .entriesPerMonthIds[now.month.toString()]
+              .entriesPerMonthIds[currentDate.month.toString()]
               .toString();
           if (monthId == null) {
             entriesPerDayRef =
-                await createDayAndMonthEntry(now, entriesPerYear, yearKey);
+                await createDayAndMonthEntry(entriesPerYear, yearKey);
           } else {
             final DocumentSnapshot entriesPerMonthSnapshot =
-                await entriesPerMonthCollRef.doc(monthId).get();
+                await monthCollRef.doc(monthId).get();
             final Map<String, dynamic> entriesPerMonthData =
                 entriesPerMonthSnapshot.data();
             if (entriesPerMonthData == null) {
               entriesPerDayRef =
-                  await createDayAndMonthEntry(now, entriesPerYear, yearKey);
+                  await createDayAndMonthEntry(entriesPerYear, yearKey);
             } else {
               final EntriesPerMonth entriesPerMonth =
                   EntriesPerMonth.fromJson(entriesPerMonthData);
               final String dayId = entriesPerMonth
-                  .entriesPerDayIds[now.day.toString()]
+                  .entriesPerDayIds[currentDate.day.toString()]
                   .toString();
               if (dayId == null || dayId == 'null') {
-                entriesPerDayRef = await createEntriesPerDayDoc(now);
-                entriesPerMonth.entriesPerDayIds[now.day.toString()] =
+                entriesPerDayRef = await createEntriesPerDayDoc();
+                entriesPerMonth.entriesPerDayIds[currentDate.day.toString()] =
                     entriesPerDayRef.id;
-                await entriesPerMonthCollRef
+                await monthCollRef
                     .doc(entriesPerMonthSnapshot.id)
                     .update(entriesPerMonth.toJson());
               } else {
@@ -83,16 +85,16 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
             }
           }
         } else {
-          entriesPerDayRef = await createEntriesPerDayDoc(now);
+          entriesPerDayRef = await createEntriesPerDayDoc();
           final DocumentReference entriesPerMonthRef =
-              await createEntriesPerMonthDoc(now, entriesPerDayRef);
-          await createEntriesPerYearDoc(yearKey, now, entriesPerMonthRef);
+              await createEntriesPerMonthDoc(entriesPerDayRef);
+          await createEntriesPerYearDoc(yearKey, entriesPerMonthRef);
         }
         if (entriesPerDayRef != null) {
           dailyEntryId = entriesPerDayRef.id;
         }
       }
-      return entriesPerDayCollRef.doc(dailyEntryId).get();
+      return dayCollRef.doc(dailyEntryId).get();
     }
 
     return FutureBuilder<DocumentSnapshot>(
@@ -123,41 +125,40 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
   }
 
   Future<DocumentReference> createDayAndMonthEntry(
-      DateTime now, EntriesPerYear entriesPerYear, String yearKey) async {
-    final DocumentReference entriesPerDayRef =
-        await createEntriesPerDayDoc(now);
+      EntriesPerYear entriesPerYear, String yearKey) async {
+    final DocumentReference entriesPerDayRef = await createEntriesPerDayDoc();
     final DocumentReference entriesPerMonthRef =
-        await createEntriesPerMonthDoc(now, entriesPerDayRef);
-    entriesPerYear.entriesPerMonthIds[now.month.toString()] =
+        await createEntriesPerMonthDoc(entriesPerDayRef);
+    entriesPerYear.entriesPerMonthIds[currentDate.month.toString()] =
         entriesPerMonthRef.id;
-    await entriesPerYearCollRef.doc(yearKey).update(entriesPerYear.toJson());
+    await yearCollRef.doc(yearKey).update(entriesPerYear.toJson());
     return entriesPerDayRef;
   }
 
-  Future<void> createEntriesPerYearDoc(String yearKey, DateTime now,
-      DocumentReference entriesPerMonthRef) async {
-    await entriesPerYearCollRef.doc(yearKey).set(EntriesPerYear(
+  Future<void> createEntriesPerYearDoc(
+      String yearKey, DocumentReference entriesPerMonthRef) async {
+    await yearCollRef.doc(yearKey).set(EntriesPerYear(
             id: yearKey,
-            year: now.year.toString(),
+            year: currentDate.year.toString(),
             entriesPerMonthIds: <String, String>{
-              now.month.toString(): entriesPerMonthRef.id
+              currentDate.month.toString(): entriesPerMonthRef.id
             }).toJson());
   }
 
   Future<DocumentReference> createEntriesPerMonthDoc(
-      DateTime now, DocumentReference entriesPerDayRef) async {
-    final DocumentReference entriesPerMonthRef =
-        await entriesPerMonthCollRef.add(EntriesPerMonth(
-            month: now.month.toString(),
+      DocumentReference entriesPerDayRef) async {
+    final DocumentReference entriesPerMonthRef = await monthCollRef.add(
+        EntriesPerMonth(
+            month: currentDate.month.toString(),
             entriesPerDayIds: <String, String>{
-          now.day.toString(): entriesPerDayRef.id
+          currentDate.day.toString(): entriesPerDayRef.id
         }).toJson());
     return entriesPerMonthRef;
   }
 
-  Future<DocumentReference> createEntriesPerDayDoc(DateTime now) async {
-    final DocumentReference entriesPerDayRef = await entriesPerDayCollRef
-        .add(EntriesPerDay(day: now.day.toString()).toJson());
+  Future<DocumentReference> createEntriesPerDayDoc() async {
+    final DocumentReference entriesPerDayRef = await dayCollRef
+        .add(EntriesPerDay(day: currentDate.day.toString()).toJson());
     return entriesPerDayRef;
   }
 
@@ -176,9 +177,7 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
           try {
             final EntriesPerDay entriesPerDay = EntriesPerDay(
                 day: now.day.toString(), entries: _entriesInSeconds);
-            await entriesPerDayCollRef
-                .doc(dailyEntryId)
-                .update(entriesPerDay.toJson());
+            await dayCollRef.doc(dailyEntryId).update(entriesPerDay.toJson());
           } catch (e) {
             DialogUtil.showErrorMessage(
                 context, 'Erro ao registrar apontamento: ${e.toString()}');
