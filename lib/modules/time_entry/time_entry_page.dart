@@ -22,20 +22,18 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
   final List<int> _entriesInSeconds = <int>[];
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-  final CollectionReference entriesPerYearCollRef =
-      FirebaseFirestore.instance.collection('entries_per_year');
-  final CollectionReference entriesPerMonthCollRef =
-      FirebaseFirestore.instance.collection('entries_per_month');
-  final CollectionReference entriesPerDayCollRef =
-      FirebaseFirestore.instance.collection('entries_per_day');
-
+  CollectionReference entriesPerYearCollRef;
+  CollectionReference entriesPerMonthCollRef;
+  CollectionReference entriesPerDayCollRef;
   User loggedUser;
   String dailyEntryId;
 
   @override
   Widget build(BuildContext context) {
     loggedUser = ModalRoute.of(context).settings.arguments as User;
+    entriesPerYearCollRef = firestore.collection('entries_per_year');
+    entriesPerMonthCollRef = firestore.collection('entries_per_month');
+    entriesPerDayCollRef = firestore.collection('entries_per_day');
 
     return buildPage();
   }
@@ -47,34 +45,25 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
         final String yearKey = TimeUtil.generateYearKey(loggedUser, now);
         final DocumentSnapshot snapshot =
             await entriesPerYearCollRef.doc(yearKey).get();
-        final Map<String, dynamic> data = snapshot.data();
+        final Map<String, dynamic> entriesPerYearJson = snapshot.data();
         DocumentReference entriesPerDayRef;
-        if (data != null) {
-          final EntriesPerYear entriesPerYear = EntriesPerYear.fromJson(data);
+        if (entriesPerYearJson != null) {
+          final EntriesPerYear entriesPerYear =
+              EntriesPerYear.fromJson(entriesPerYearJson);
           final String monthId = entriesPerYear
               .entriesPerMonthIds[now.month.toString()]
               .toString();
           if (monthId == null) {
-            entriesPerDayRef = await createDayAndMonthEntry(
-                entriesPerDayCollRef,
-                now,
-                entriesPerMonthCollRef,
-                entriesPerYear,
-                entriesPerYearCollRef,
-                yearKey);
+            entriesPerDayRef =
+                await createDayAndMonthEntry(now, entriesPerYear, yearKey);
           } else {
             final DocumentSnapshot entriesPerMonthSnapshot =
                 await entriesPerMonthCollRef.doc(monthId).get();
             final Map<String, dynamic> entriesPerMonthData =
                 entriesPerMonthSnapshot.data();
             if (entriesPerMonthData == null) {
-              entriesPerDayRef = await createDayAndMonthEntry(
-                  entriesPerDayCollRef,
-                  now,
-                  entriesPerMonthCollRef,
-                  entriesPerYear,
-                  entriesPerYearCollRef,
-                  yearKey);
+              entriesPerDayRef =
+                  await createDayAndMonthEntry(now, entriesPerYear, yearKey);
             } else {
               final EntriesPerMonth entriesPerMonth =
                   EntriesPerMonth.fromJson(entriesPerMonthData);
@@ -82,8 +71,7 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
                   .entriesPerDayIds[now.day.toString()]
                   .toString();
               if (dayId == null || dayId == 'null') {
-                entriesPerDayRef =
-                    await createEntriesPerdDayDoc(entriesPerDayCollRef, now);
+                entriesPerDayRef = await createEntriesPerDayDoc(now);
                 entriesPerMonth.entriesPerDayIds[now.day.toString()] =
                     entriesPerDayRef.id;
                 await entriesPerMonthCollRef
@@ -95,13 +83,10 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
             }
           }
         } else {
-          entriesPerDayRef =
-              await createEntriesPerdDayDoc(entriesPerDayCollRef, now);
+          entriesPerDayRef = await createEntriesPerDayDoc(now);
           final DocumentReference entriesPerMonthRef =
-              await createEntriesPerMonthDoc(
-                  entriesPerMonthCollRef, now, entriesPerDayRef);
-          await createEntriesPerYearDoc(
-              entriesPerYearCollRef, yearKey, now, entriesPerMonthRef);
+              await createEntriesPerMonthDoc(now, entriesPerDayRef);
+          await createEntriesPerYearDoc(yearKey, now, entriesPerMonthRef);
         }
         if (entriesPerDayRef != null) {
           dailyEntryId = entriesPerDayRef.id;
@@ -132,31 +117,24 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
             return buildScaffold(
                 context: context, user: loggedUser, isLoading: false);
           }
-          return buildScaffold(context: context, user: loggedUser, isLoading: true);
+          return buildScaffold(
+              context: context, user: loggedUser, isLoading: true);
         });
   }
 
   Future<DocumentReference> createDayAndMonthEntry(
-      CollectionReference entriesPerDayCollRef,
-      DateTime now,
-      CollectionReference entriesPerMonthCollRef,
-      EntriesPerYear entriesPerYear,
-      CollectionReference entriesPerYearCollRef,
-      String yearKey) async {
+      DateTime now, EntriesPerYear entriesPerYear, String yearKey) async {
     final DocumentReference entriesPerDayRef =
-        await createEntriesPerdDayDoc(entriesPerDayCollRef, now);
-    final DocumentReference entriesPerMonthRef = await createEntriesPerMonthDoc(
-        entriesPerMonthCollRef, now, entriesPerDayRef);
+        await createEntriesPerDayDoc(now);
+    final DocumentReference entriesPerMonthRef =
+        await createEntriesPerMonthDoc(now, entriesPerDayRef);
     entriesPerYear.entriesPerMonthIds[now.month.toString()] =
         entriesPerMonthRef.id;
     await entriesPerYearCollRef.doc(yearKey).update(entriesPerYear.toJson());
     return entriesPerDayRef;
   }
 
-  Future<void> createEntriesPerYearDoc(
-      CollectionReference entriesPerYearCollRef,
-      String yearKey,
-      DateTime now,
+  Future<void> createEntriesPerYearDoc(String yearKey, DateTime now,
       DocumentReference entriesPerMonthRef) async {
     await entriesPerYearCollRef.doc(yearKey).set(EntriesPerYear(
             id: yearKey,
@@ -167,9 +145,7 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
   }
 
   Future<DocumentReference> createEntriesPerMonthDoc(
-      CollectionReference entriesPerMonthCollRef,
-      DateTime now,
-      DocumentReference entriesPerDayRef) async {
+      DateTime now, DocumentReference entriesPerDayRef) async {
     final DocumentReference entriesPerMonthRef =
         await entriesPerMonthCollRef.add(EntriesPerMonth(
             month: now.month.toString(),
@@ -179,8 +155,7 @@ class _TimeEntryPageState extends State<TimeEntryPage> {
     return entriesPerMonthRef;
   }
 
-  Future<DocumentReference> createEntriesPerdDayDoc(
-      CollectionReference entriesPerDayCollRef, DateTime now) async {
+  Future<DocumentReference> createEntriesPerDayDoc(DateTime now) async {
     final DocumentReference entriesPerDayRef = await entriesPerDayCollRef
         .add(EntriesPerDay(day: now.day.toString()).toJson());
     return entriesPerDayRef;
