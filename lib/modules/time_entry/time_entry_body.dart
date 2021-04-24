@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:time_is_money/modules/model/time_entry.dart';
 import 'package:time_is_money/modules/time_entry/time_entry_info.dart';
 import 'package:time_is_money/modules/time_entry/time_entry_list.dart';
 
