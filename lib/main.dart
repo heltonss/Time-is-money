@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'modules/common/error_page.dart';
 import 'modules/common/loading_page.dart';
 import 'modules/create_user/create_user.dart';
+import 'modules/history/history_page.dart';
 import 'modules/home/home.dart';
 import 'modules/login/login.dart';
 import 'modules/time_entry/time_entry_page.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
                 '/': (BuildContext context) => Login(),
                 'home': (BuildContext context) => Home(),
                 'time-entry': (BuildContext context) => TimeEntryPage(),
+                'history': (BuildContext context) => HistoryPage(),
                 'create-user': (BuildContext context) => CreateUser()
               });
         }

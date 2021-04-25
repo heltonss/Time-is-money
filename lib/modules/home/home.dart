@@ -32,6 +32,16 @@ class Home extends StatelessWidget {
                       style: TextStyle(fontSize: 16),
                     )),
               ),
+              Center(
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, 'history', arguments: user);
+                    },
+                    child: const Text(
+                      'Acessar histórico',
+                      style: TextStyle(fontSize: 16),
+                    )),
+              ),
             ],
           ),
         ));
