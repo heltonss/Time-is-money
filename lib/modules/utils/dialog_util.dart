@@ -17,4 +17,30 @@ class DialogUtil {
               ],
             ));
   }
+
+  static void showDialogWithActions(
+      BuildContext context,
+      String title,
+      String message,
+      String positiveText,
+      VoidCallback positiveAction,
+      String negativeText,
+      VoidCallback negativeAction) {
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+              title: Text(title),
+              content: Text(message),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: positiveAction,
+                  child: Text(positiveText),
+                ),
+                TextButton(
+                  onPressed: negativeAction,
+                  child: Text(negativeText),
+                )
+              ],
+            ));
+  }
 }
