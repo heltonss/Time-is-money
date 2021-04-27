@@ -1,11 +1,13 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:time_is_money/modules/model/user.dart' as user_main;
+import 'package:time_is_money/modules/utils/biometrics_util.dart';
 
 class Login extends StatelessWidget {
+  static BiometricsUtil biometricsUtil = BiometricsUtil();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final CollectionReference userCollection =
@@ -80,6 +82,12 @@ class Login extends StatelessWidget {
 
           return null;
         },
+        onTap: () async {
+          biometricsUtil.tryLoginWithBiometrics(context,
+                  (user_main.User user) {
+                signin(user, context);
+              });
+        },
        ),
     ),
     _containerInput(
@@ -97,6 +105,12 @@ class Login extends StatelessWidget {
             return 'Insira uma senha';
           }
           return null;
+        },
+        onTap: () async {
+          biometricsUtil.tryLoginWithBiometrics(context,
+                  (user_main.User user) {
+                signin(user, context);
+              });
         },
       ),
     ),
@@ -117,13 +131,16 @@ class Login extends StatelessWidget {
 
   signin(user_main.User user, BuildContext context) async {
     try {
-      final UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: user.email,
-          password: user.password
-      );
-      if(userCredential.user.email !=  null) {
-        user_main.User firestoreUser = await getOrCreateUserInFirestore(user);
-        Navigator.pushReplacementNamed(context, 'home', arguments: firestoreUser);
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: user.email, password: user.password);
+      if (userCredential.user.email != null) {
+        final user_main.User firestoreUser =
+            await getOrCreateUserInFirestore(user);
+        biometricsUtil.checkBiometrics(context, user, () {
+          Navigator.pushReplacementNamed(context, 'home',
+              arguments: firestoreUser);
+        });
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
