@@ -15,22 +15,38 @@ class Home extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(top: 16.0, bottom: 20.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Center(
                     child: Text(
                   'Bem vindo: ${user.userName.toUpperCase()}',
                   style: const TextStyle(fontSize: 25),
                 )),
               ),
-              Center(
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, 'time-entry', arguments: user);
-                    },
-                    child: const Text(
-                      'Apontar Horas',
-                      style: TextStyle(fontSize: 16),
-                    )),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, 'time-entry', arguments: user);
+                      },
+                      child: const Text(
+                        'Apontar Horas',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, 'about');
+                      },
+                      child: const Text(
+                        'Sobre Nós',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                ),
               ),
             ],
           ),

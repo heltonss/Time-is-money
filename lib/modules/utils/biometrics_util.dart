@@ -80,6 +80,8 @@ class BiometricsUtil {
     } on PlatformException catch (e) {
       // ignore: avoid_print
       print('Unable to authenticate: ${e.message}');
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isBiometricsEnabled', false);
     }
   }
 
