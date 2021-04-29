@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'modules/about/about.dart';
 import 'modules/common/error_page.dart';
 import 'modules/common/loading_page.dart';
 import 'modules/create_user/create_user.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
               routes: <String, WidgetBuilder>{
                 '/': (BuildContext context) => Login(),
                 'home': (BuildContext context) => Home(),
+                'about': (BuildContext context) => About(),
                 'time-entry': (BuildContext context) => TimeEntryPage(),
                 'create-user': (BuildContext context) => CreateUser()
               });
