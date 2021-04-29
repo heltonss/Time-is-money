@@ -30,12 +30,10 @@ class Login extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Form(
                 key: _formKey,
-                child: Expanded(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: form(context)),
-                ))));
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: form(context)))));
   }
 
   List<Widget> form(BuildContext context) {
