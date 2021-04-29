@@ -30,43 +30,45 @@ class Login extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Form(
                 key: _formKey,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: form(context)))));
+                child: Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: form(context)),
+                ))));
   }
 
   List<Widget> form(BuildContext context) {
     return <Widget>[
       Container(
         alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: 50),
-        child: const Icon(Icons.access_time, size: 150, color: Colors.blueAccent,),
+        child: const Icon(
+          Icons.access_time,
+          size: 150,
+          color: Colors.blueAccent,
+        ),
       ),
-      Column(
-        children: inputs(context)
-      ),
+      Column(children: inputs(context)),
       Container(
         alignment: Alignment.center,
-        margin: const EdgeInsets.only(top: 30),
-        child:  TextButton(
+        child: TextButton(
           onPressed: () {
             Navigator.pushNamed(context, 'create-user');
           },
-          child: Text('criar usuario'.toUpperCase(),
-          style: const TextStyle(fontSize: 16),
+          child: Text(
+            'criar usuario'.toUpperCase(),
+            style: const TextStyle(fontSize: 16),
           ),
         ),
       )
     ];
   }
 
-
   List <Widget> inputs (BuildContext context) {
     final TextEditingController _email = TextEditingController();
     final TextEditingController _password = TextEditingController();
 
-    return [
+    return <Widget>[
     _containerInput(
       TextFormField(
         decoration: const InputDecoration(
@@ -75,7 +77,7 @@ class Login extends StatelessWidget {
           labelText: 'e-mail',
         ),
         controller: _email,
-        validator: (value){
+        validator: (String value){
           if(value.isEmpty){
             return 'Insira um e-mail';
           }
@@ -100,7 +102,7 @@ class Login extends StatelessWidget {
           labelText: 'password',
         ),
         controller: _password,
-        validator: (value){
+        validator: (String value){
           if(value.isEmpty){
             return 'Insira uma senha';
           }
@@ -144,8 +146,10 @@ class Login extends StatelessWidget {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
+        // ignore: avoid_print
         print('Usuário não encontrado.');
       } else if (e.code == 'wrong-password') {
+        // ignore: avoid_print
         print('Senha incorreta');
       }
     }
