@@ -25,7 +25,7 @@ class TimeUtil {
     return '0$n';
   }
 
-  static String durationToHms(Duration duration, {int hour}) {
+  static String durationToHms(Duration duration) {
     if (duration.inMicroseconds < 0) {
       return '-${-duration}';
     }
