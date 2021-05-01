@@ -4,7 +4,7 @@ class EntriesPerDay {
   factory EntriesPerDay.fromJson(Map<String, dynamic> json) {
     return EntriesPerDay(
       day: json['day'] as String,
-      entries: json['entries'] as List<int>,
+      entries: List<int>.from(json['entries'] as List<dynamic>),
     );
   }
 

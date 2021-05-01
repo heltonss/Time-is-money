@@ -11,7 +11,8 @@ class TimeUtil {
       if (periodEntrance == null) {
         periodEntrance = entry;
       } else {
-        totalWorkingTimeInSeconds += entry.difference(periodEntrance).inSeconds;
+        totalWorkingTimeInSeconds +=
+            (entry.difference(periodEntrance).inMilliseconds / 1000).round();
         periodEntrance = null;
       }
     }
@@ -45,5 +46,48 @@ class TimeUtil {
 
   static String formatDate(DateTime date) {
     return '${twoDigits(date.day)}/${twoDigits(date.month)}/${date.year}';
+  }
+
+  static String convertMonthNumberToMonthName(int monthNumber) {
+    switch (monthNumber) {
+      case 1:
+        return 'Janeiro';
+        break;
+      case 2:
+        return 'Fevereiro';
+        break;
+      case 3:
+        return 'Março';
+        break;
+      case 4:
+        return 'Abril';
+        break;
+      case 5:
+        return 'Maio';
+        break;
+      case 6:
+        return 'Junho';
+        break;
+      case 7:
+        return 'Julho';
+        break;
+      case 8:
+        return 'Agosto';
+        break;
+      case 9:
+        return 'Setembro';
+        break;
+      case 10:
+        return 'Outubro';
+        break;
+      case 11:
+        return 'Novembro';
+        break;
+      case 12:
+        return 'Dezembro';
+        break;
+      default:
+        return '';
+    }
   }
 }

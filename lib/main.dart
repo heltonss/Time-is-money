@@ -5,6 +5,7 @@ import 'modules/about/about.dart';
 import 'modules/common/error_page.dart';
 import 'modules/common/loading_page.dart';
 import 'modules/create_user/create_user.dart';
+import 'modules/history/history_year_page.dart';
 import 'modules/home/home.dart';
 import 'modules/login/login.dart';
 import 'modules/time_entry/time_entry_page.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
                 'home': (BuildContext context) => Home(),
                 'about': (BuildContext context) => About(),
                 'time-entry': (BuildContext context) => TimeEntryPage(),
+                'history': (BuildContext context) => HistoryYearPage(),
                 'create-user': (BuildContext context) => CreateUser()
               });
         }
