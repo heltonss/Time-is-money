@@ -38,7 +38,7 @@ class HistoryDAO {
         totalTime: totalTime,
         title: yearEntries.year,
         subEntries: monthEntries,
-        apointments: <DateTime>[]);
+        entryRecord: <DateTime>[]);
   }
 
   Future<HistoryEntry> getTimePerMonth(String monthKey) async {
@@ -62,7 +62,7 @@ class HistoryDAO {
         title:
             TimeUtil.convertMonthNumberToMonthName(int.parse(monthEntry.month)),
         subEntries: dayEntries,
-        apointments: <DateTime>[]);
+        entryRecord: <DateTime>[]);
   }
 
   Future<HistoryEntry> getTimePerDay(String dayKey) async {
@@ -80,6 +80,6 @@ class HistoryDAO {
         totalTime: totalTime,
         title: dailyEntry.day,
         subEntries: <HistoryEntry>[],
-        apointments: dateTimeEntries);
+        entryRecord: dateTimeEntries);
   }
 }

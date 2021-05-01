@@ -41,7 +41,7 @@ class _HistoryYearPageState extends State<HistoryYearPage> {
   Widget buildTimeEntryPage({BuildContext context}) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Time is Money'),
+          title: const Text('Histórico - 2021'),
         ),
         body: HistoryYearBody(
           yearData: baseEntries,

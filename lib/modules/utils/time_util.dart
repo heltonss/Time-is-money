@@ -11,7 +11,8 @@ class TimeUtil {
       if (periodEntrance == null) {
         periodEntrance = entry;
       } else {
-        totalWorkingTimeInSeconds += entry.difference(periodEntrance).inSeconds;
+        totalWorkingTimeInSeconds +=
+            (entry.difference(periodEntrance).inMilliseconds / 1000).round();
         periodEntrance = null;
       }
     }

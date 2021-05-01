@@ -27,7 +27,8 @@ class Home extends StatelessWidget {
                 child: Center(
                   child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, 'time-entry', arguments: user);
+                        Navigator.pushNamed(context, 'time-entry',
+                            arguments: user);
                       },
                       child: const Text(
                         'Apontar Horas',
@@ -35,6 +36,19 @@ class Home extends StatelessWidget {
                       )),
                 ),
               ),
+              Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
+                    child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'history',
+                              arguments: user);
+                        },
+                        child: const Text(
+                          'Acessar histórico',
+                          style: TextStyle(fontSize: 20),
+                        )),
+                  )),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Center(
@@ -47,16 +61,6 @@ class Home extends StatelessWidget {
                         style: TextStyle(fontSize: 20),
                       )),
                 ),
-              ),
-              Center(
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, 'history', arguments: user);
-                    },
-                    child: const Text(
-                      'Acessar histórico',
-                      style: TextStyle(fontSize: 16),
-                    )),
               ),
             ],
           ),
