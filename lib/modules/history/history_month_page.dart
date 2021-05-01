@@ -18,13 +18,6 @@ class HistoryMonthPage extends StatelessWidget {
         appBar: AppBar(
           title: Text('Histórico - $monthName $year'),
         ),
-        // body: Column(
-        //   children: <Widget>[
-        //     Expanded(
-        //         child: ListView(
-        //             children: _buildEntryRecord(entries[3].entryRecord)))
-        //   ],
-        // )
         body: ListView.builder(
           itemBuilder: (BuildContext context, int index) {
             return Card(
