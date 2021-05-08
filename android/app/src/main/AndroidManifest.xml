@@ -4,7 +4,7 @@
   <uses-permission android:name="android.permission.VIBRATE" />
 
    <application
-        android:label="time_is_money"
+        android:label="Time"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
